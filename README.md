@@ -44,4 +44,4 @@ To run the simulation:
 
 ## Disclaimer
 
-This project is for educational and simulation purposes. Real-world filter design and testing for UL1283 compliance and SPD robustness require Hardcore engineering, deeo understanding of electromagnetics, adherence to safety regulations, and physical prototyping and testing in accredited labs.
+This project is for educational and simulation purposes. Real-world filter design and testing for UL1283 compliance and SPD robustness require Hardcore engineering, deep understanding of electromagnetics, adherence to safety regulations, and physical prototyping and testing in accredited labs.
