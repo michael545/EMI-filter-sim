@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
 # --- Initial IEC Standard Parameters ---
-Q_init = 5
+Q_init = 1.448
 f0_init = 20.03  # in kHz
 Itarget_peak = 100000.0  # 100 kA
 
 # --- Global Time Array ---
-t_max = 40 # µs (reduced for better view of the 8/20 pulse)
+t_max = 100 # µs (reduced for better view of the 8/20 pulse)
 num_points = 1000000
 t = np.linspace(0, t_max, num_points)
 
@@ -81,8 +81,13 @@ ax.set_title('IEC 61000-4-5 Damped Sine Wave (8/20 µs Current Surge)')
 ax.set_xlabel('Time t (µs)')
 ax.set_ylabel('Current I(t) (A)')
 ax.grid(True, which="both", ls="--")
+ax.axhline(-33000, color='green', linestyle='--', lw=1.5, label='-33kA Threshold') # Added horizontal line
 ax.set_xlim([0, t_max])
-ax.set_ylim([-0.15 * Itarget_peak, 1.1 * Itarget_peak]) # ax.set_ylim([-0.15 * max_current, 1.1 * max_current])
+# Adjust y-limits to ensure the new line and the waveform are visible
+initial_max_current = np.max(initial_current) if np.any(initial_current) else Itarget_peak
+lower_y_limit = min(-0.3 * Itarget_peak, -33000 - 0.1 * abs(-33000)) # Ensure -33k line is visible with padding
+upper_y_limit = 1.1 * initial_max_current
+ax.set_ylim([lower_y_limit, upper_y_limit])
 
 # --- Sliders for Q and f0 ---
 ax_Q = plt.axes([0.15, 0.20, 0.65, 0.03])
@@ -139,8 +144,11 @@ def update(val):
     
     line.set_ydata(current_data)
     
-    max_current = np.max(current_data) if np.any(current_data) else Itarget_val
-    ax.set_ylim([-0.1 * max_current, max_current * 1.1])
+    max_current_val = np.max(current_data) if np.any(current_data) else Itarget_val
+    # Adjust y-limits to ensure the new line and the waveform are visible
+    dynamic_lower_y_limit = min(-0.1 * max_current_val, -33000 - 0.1 * abs(-33000)) # Ensure -33k line is visible
+    dynamic_upper_y_limit = max_current_val * 1.1
+    ax.set_ylim([dynamic_lower_y_limit, dynamic_upper_y_limit])
     
     update_timing_annotations(current_data)
     fig.canvas.draw_idle()
