@@ -133,5 +133,5 @@ if __name__ == "__main__":
         print(f"   => Final Front Time:     {front_time_final:.6f} µs (Target: {TARGET_FRONT_TIME_US})")
         print(f"   => Final Half-Value Time:  {half_value_time_final:.6f} µs (Target: {TARGET_HALF_VALUE_TIME_US})")
     else:
-        print(f"❌ Optimizer failed to converge.")
+        print(f"Optimizer not converging.")
         print(f"   Message: {result.message}")
