@@ -2,9 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
-R_init_init = 1000.0       # (1kΩ)
-R_inrush_init = 1.0   # 
-C_init = 2e-6         #
+R_inrush_init = 1000   # 
+C_init = 4.7e-6         #
 
 # --- Set up the Figure and Axes ---
 #
@@ -19,9 +18,10 @@ omega = 2 * np.pi * frequencies
 
 # --- Initial Calculation and Plotting ---
 # Calculate the initial frequency response using the initial values
-numerator_init = np.sqrt((omega * C_init)**-2 + R_inrush_init**2)
-denominator_init = numerator_init + R_init_init
-initial_magnitude = numerator_init / denominator_init
+# For a classical RC low-pass filter, H(jω) = 1 / (1 + jωRC)
+# Magnitude |H(jω)| = 1 / sqrt(1 + (ωRC)^2)
+# Here, R is R_inrush_init and C is C_init. R_init_init is not used.
+initial_magnitude = 1 / np.sqrt(1 + (omega * R_inrush_init * C_init)**2)
 initial_magnitude_db = 20 * np.log10(initial_magnitude)
 
 # Plot the initial response curve. We store the line object to update it later.
@@ -60,19 +60,9 @@ legend = ax.legend(
 
 # --- Add Interactive Sliders ---
 # Define axes for the sliders
-ax_R_init = plt.axes([0.15, 0.15, 0.65, 0.03])
 ax_R_inrush = plt.axes([0.15, 0.1, 0.65, 0.03])
 ax_C = plt.axes([0.15, 0.05, 0.65, 0.03]) # Axis for Capacitor slider
 
-#linear slider za R_init
-slider_R_init = Slider(
-    ax=ax_R_init,
-    label='R_init (kΩ)',
-    valmin=0.1, 
-    valmax=100.0, 
-    valinit= R_init_init / 1000, # Convert to kOhms
-    valfmt='%1.2f'
-)
 
 # Create a linear slider for R_inrush
 slider_R_inrush = Slider(
@@ -97,14 +87,12 @@ slider_C = Slider(
 # --- Update Function ---
 def update(val):
     # Get current values from the sliders
-    R_init = slider_R_init.val * 1000 # kOm--> Ohms
     R_inrush = slider_R_inrush.val
     C = slider_C.val / 1e6 # Get C from slider and convert µF to F
 
-    # Recalculate the frequency response
-    numerator = np.sqrt((omega * C)**-2 + R_inrush**2) # Use C from slider
-    denominator = numerator + R_init
-    new_magnitude = numerator / denominator
+    # Recalculate the frequency response for a classical RC low-pass filter
+    # Here, R is R_inrush and C is C from sliders. R_init is not used.
+    new_magnitude = 1 / np.sqrt(1 + (omega * R_inrush * C)**2)
     new_magnitude_db = 20 * np.log10(new_magnitude)
     line.set_ydata(new_magnitude_db)
 
@@ -136,7 +124,6 @@ def update(val):
     fig.canvas.draw_idle()
 
 # Register the update functions
-slider_R_init.on_changed(update)
 slider_R_inrush.on_changed(update)
 slider_C.on_changed(update)
 
